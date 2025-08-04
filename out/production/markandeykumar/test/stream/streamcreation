@@ -1,0 +1,46 @@
+The Stream API in Java provides several creation operations that allow you to create a stream from various sources. Here are some of the creation operations provided by the Stream API:
+
+Stream.of(): Creates a stream from a fixed number of values.
+Arrays.stream(): Creates a stream from an array.
+Stream.iterate(): Creates an infinite stream by iteratively applying a function to a seed value.
+Stream.generate(): Creates an infinite stream by generating values using a Supplier.
+Files.lines(): Creates a stream of lines from a file.
+Files.lines().parallel(): Creates a parallel stream of lines from a file.
+Files.walk(): Creates a stream of Path objects representing the files in a directory and its subdirectories.
+Here's a brief example of each:
+
+Stream.of():
+java
+CopyInsert
+Stream<String> stream = Stream.of("apple", "banana", "orange");
+Arrays.stream():
+java
+CopyInsert
+int[] numbers = {1, 2, 3, 4, 5};
+IntStream stream = Arrays.stream(numbers);
+Stream.iterate():
+java
+CopyInsert
+Stream<Integer> stream = Stream.iterate(1, n -> n + 1);
+Stream.generate():
+java
+CopyInsert
+Stream<Integer> stream = Stream.generate(() -> (int) (Math.random() * 10));
+Files.lines():
+java
+CopyInsert
+Path path = Paths.get("data.txt");
+Stream<String> stream = Files.lines(path);
+Files.lines().parallel():
+java
+CopyInsert
+Path path = Paths.get("data.txt");
+Stream<String> stream = Files.lines(path).parallel();
+Files.walk():
+java
+CopyInsert
+
+/Users/mark123/IdeaProjects/markandeykumar/src/test/stream/streamcreation
+Path path = Paths.get("data");
+Stream<Path> stream = Files.walk(path);
+These are just a few examples of the creation operations provided by the Stream API. The Stream API provides a wide range of creation operations that allow you to create streams from various sources, including arrays, collections, files, and more.

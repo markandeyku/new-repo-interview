@@ -1,0 +1,151 @@
+🧩 What Are Design Principles in Software Development?
+Design principles are a set of guidelines or best practices that help
+ developers create clean, scalable, maintainable, and robust software systems.
+ They help in structuring code, managing complexity, and reducing bugs as systems
+ evolve over time.
+
+
+🚀 Why Are Design Principles Used?
+🔍 Goal	✅ Benefit
+✅ Improve Code Quality:   	Clean, readable, and reusable code
+✅ Enable Scalability:	Code can adapt to growing requirements easily
+✅ Support Maintainability:	Easy to modify or fix bugs without breaking other parts
+✅ Promote Testability: 	Easier to write and run unit and integration tests
+✅ Reduce Technical Debt: 	Avoid messy code that becomes difficult to understand or extend
+✅ Encourage Reusability: 	Common functionalities can be reused across different modules
+✅ Help Collaboration: 	Code is easier to understand and work on in teams
+
+
+
+ Key Design Principles
+🔵 1. SOLID Principles (OOP-focused)
+Principle	Description
+S – Single Responsibility	A class should have one and only one reason to change
+O – Open/Closed	Classes should be open for extension, but closed for modification
+L – Liskov Substitution	Subtypes must be substitutable for their base types
+I – Interface Segregation	Many client-specific interfaces are better than one general-purpose interface
+D – Dependency Inversion	Depend on abstractions, not concretions
+
+🟠 2. DRY – Don’t Repeat Yourself
+Avoid duplicating code.
+
+Extract common logic into methods or services.
+
+🟡 3. KISS – Keep It Simple, Stupid
+Avoid overengineering.
+
+Favor simple and straightforward solutions.
+
+🟢 4. YAGNI – You Aren’t Gonna Need It
+Don’t build features unless you actually need them.
+
+🔴 5. Separation of Concerns
+Different parts of a system should deal with different concerns.
+
+Example: UI, business logic, and database logic should be in separate layers.
+
+🟣 6. Law of Demeter (Principle of Least Knowledge)
+A module should only interact with its direct dependencies, not their dependencies.
+
+
+
+There are mainly three types of design patterns:
+
+1.Creational Design Patterns -  Factory, Singleton, Prototype, Builder, Abstract Factory
+2.Structural Design Patterns -   Decorator, Facade, Proxy, Composite
+3.Behavioral Design Patterns -   Strategy, Observer, Template Method
+
+🔵 Creational Design Patterns
+    Creational design patterns are all about how objects are created. They help make a system independent
+    of how its objects are created, composed, and represented, promoting flexibility and reuse.
+
+📦 Why Use Creational Patterns?
+    Avoid hard-coding object creation.
+
+    Support future extensibility (e.g., change how objects are constructed without touching client code).
+
+    Encourage loose coupling and abstraction in object instantiation.
+
+🏗️ 5 Core Creational Patterns
+
+| Pattern              | Intent                                                                                           | Common Use Cases                                 |
+| -------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------ |
+| **Singleton**        | Ensure a class has only one instance and provide a global point of access                        | Logger, Config Manager, DB connection pool       |
+| **Factory Method**   | Define an interface for creating an object, but let subclasses decide which class to instantiate | UI components, Notification Factory              |
+| **Abstract Factory** | Create families of related or dependent objects without specifying their concrete classes        | Theme switching (Light/Dark), Cross-platform UI  |
+| **Builder**          | Construct a complex object step-by-step, allowing optional parameters and immutable objects      | Building JSON, HTTP requests, Pizza order system |
+| **Prototype**        | Clone existing objects instead of creating new ones                                              | Object pooling, Graphic editors, Game characters |
+
+
+
+
+
+🧱 Structural Design Patterns – Explained Simply
+    Structural design patterns are all about how classes and objects are composed to form larger, flexible structures.
+    They focus on simplifying relationships between entities — like wrapping, bridging, or adapting one to another
+     — to make code more scalable, testable, and maintainable.
+
+
+ 📦 Why Use Structural Patterns?
+         Promote reusability and scalability.
+
+         Make code easier to test, extend, and modify.
+
+         Help in composing objects dynamically at runtime.
+
+         Enable interfacing incompatible systems.
+
+
+
+🔑 7 Structural Patterns (Gang of Four - GoF)
+
+ | Pattern       | Purpose                                            | Example Use Case                            |
+ | ------------- | -------------------------------------------------- | ------------------------------------------- |
+ | **Adapter**   | Convert one interface to another                   | Legacy code integration                     |
+ | **Bridge**    | Separate abstraction from implementation           | UI rendering across devices                 |
+ | **Composite** | Treat individual and group of objects the same     | File system hierarchy                       |
+ | **Decorator** | Add new functionality at runtime                   | Adding features to a stream (Java IO)       |
+ | **Facade**    | Provide simplified interface to complex subsystems | Hibernate or Spring Facade APIs             |
+ | **Flyweight** | Share objects to save memory                       | Game sprites, font rendering                |
+ | **Proxy**     | Control access to another object                   | Lazy loading, security proxy, caching proxy |
+
+
+🧭 Summary Cheat Sheet
+Pattern	       Keyword	         Real World
+
+Adapter	       Translator	     Power plug adapter
+Bridge	       Decoupler	     Remote control and TV
+Composite	   Tree	             File Explorer
+Decorator	   Wrapper	         Java IO Streams
+Facade	       Simplifier	     Spring Facade
+Flyweight	   Shared memory	 Chess pieces
+Proxy	       Gatekeeper	     Hibernate lazy proxy
+
+
+🧠 Behavioral Design Patterns — Explained Clearly
+
+        Behavioral design patterns are concerned with how objects interact and communicate with each other.
+        These patterns help define clear and manageable communication between components,
+        promoting flexibility and loose coupling in large systems.
+
+
+📚 Why Use Behavioral Patterns?
+
+        Improve communication between objects
+
+        Encourage flexibility in assigning responsibilities
+
+        Allow dynamic runtime behavior changes
+
+        Simplify complex flow control, especially in large systems
+
+
+
+🧾 Summary Table
+Pattern                                Intent  	                            Key Interface Role                     	Common in...
+
+Chain of Responsibility	           Delegate request down a chain	                 Handler	                    Logging, auth pipelines
+Iterator	                       Traverse elements without structure exposure	      Iterator<T>	                Collections, Trees, Graphs
+Observer	                       Auto notify dependents on state change	       Observer, Subject	            UI, Kafka, Event-driven systems
+Strategy	                       Swap algorithms dynamically	                    Strategy interface          	Checkout systems, compression, AI
+
