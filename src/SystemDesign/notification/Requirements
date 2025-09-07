@@ -1,0 +1,35 @@
+1. Problem to Solve
+    We need a service that can send notifications to users through multiple channels:
+    .  Email
+    . SMS
+    . Push notification
+
+    (extendable to WhatsApp, Slack, etc.)
+
+
+
+2. Requirements
+
+Support multiple channels (Email, SMS, Push).
+
+Should be easily extendable when a new channel is added.
+
+Support asynchronous sending (decoupling sender and consumer).
+
+Handle failures and retries.
+
+Support priority notifications (critical vs. informational).
+
+Provide a way to log delivery status.
+
+3. Core Entities
+
+| Entity/Class                                | Responsibility                                                          |
+| ------------------------------------------- | ----------------------------------------------------------------------- |
+| `Notification`                              | Represents a notification request (message, recipient, type, priority). |
+| `Channel` (interface)                       | Common interface for sending notifications.                             |
+| `EmailChannel`, `SMSChannel`, `PushChannel` | Concrete implementations for different channels.                        |
+| `NotificationService`                       | Main service that receives requests, picks channel(s), and dispatches.  |
+| `NotificationDispatcher`                    | Handles async sending (queue-based).                                    |
+| `NotificationStatus`                        | Enum (PENDING, SENT, FAILED, RETRYING).                                 |
+| `RetryPolicy`                               | Defines retry rules (e.g., exponential backoff).                        |
