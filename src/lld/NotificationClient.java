@@ -267,3 +267,104 @@ public class NotificationClient {
         Thread.sleep(2000);
     }
 }
+
+
+
+// solving the single thread bottleneck performance issue
+
+
+
+
+
+// ------------------ Dispatcher ------------------
+
+class NotificationDispatcher {
+
+    private final Map<ChannelType, BlockingQueue<Notification>> channelQueues = new HashMap<>();
+    private final Map<ChannelType, ExecutorService> executors = new HashMap<>();
+
+    // Dependency Injection – easy to configure for testing
+    public NotificationDispatcher(Map<ChannelType, Integer> channelThreadConfig) {
+        for (Map.Entry<ChannelType, Integer> entry : channelThreadConfig.entrySet()) {
+            ChannelType channel = entry.getKey();
+            int threads = entry.getValue();
+
+            BlockingQueue<Notification> queue = new LinkedBlockingQueue<>();
+            ExecutorService executor = Executors.newFixedThreadPool(threads);
+
+            channelQueues.put(channel, queue);
+            executors.put(channel, executor);
+
+            // Start workers for this channel
+            for (int i = 0; i < threads; i++) {
+                executor.submit(() -> {
+                    try {
+                        while (true) {
+                            Notification notification = queue.take();
+                            NotificationService service =
+                                    NotificationServiceFactory.getService(notification.getChannelType());
+                            service.send(notification);
+                        }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                });
+            }
+        }
+    }
+
+    // Submit notification to the right channel queue
+    public void sendNotification(Notification notification) {
+        BlockingQueue<Notification> queue = channelQueues.get(notification.getChannelType());
+        if (queue == null) {
+            throw new IllegalArgumentException("No queue configured for " + notification.getChannelType());
+        }
+        queue.add(notification);
+    }
+
+    // Graceful shutdown
+    public void shutdown() {
+        for (ExecutorService executor : executors.values()) {
+            executor.shutdown();
+        }
+    }
+
+    // Factory method for production use (singleton-like)
+    private static NotificationDispatcher INSTANCE;
+
+    public static synchronized NotificationDispatcher getInstance() {
+        if (INSTANCE == null) {
+            Map<ChannelType, Integer> config = new HashMap<>();
+            config.put(ChannelType.EMAIL, 2);   // 2 threads for email
+            config.put(ChannelType.MOBILE, 3);  // 3 threads for SMS
+            config.put(ChannelType.PUSH, 1);    // 1 thread for push
+            INSTANCE = new NotificationDispatcher(config);
+        }
+        return INSTANCE;
+    }
+}
+
+ class NotificationClientNew {
+    public static void main(String[] args) throws InterruptedException {
+        NotificationDispatcher dispatcher = NotificationDispatcher.getInstance();
+
+        Sender sender = new Sender(new User1.Builder()
+                .userId("S1").userName("Admin").emailId("admin@system.com"));
+
+        Receiver r1 = new Receiver(new User1.Builder()
+                .userId("R1").userName("Alice").emailId("alice@example.com"));
+
+        Receiver r2 = new Receiver(new User1.Builder()
+                .userId("R2").userName("Bob").phoneNo("9876543210"));
+
+        Message message = new Message("M1", "System maintenance at 2 AM", MessageType.ALERT);
+
+        dispatcher.sendNotification(new Notification(message, sender, Arrays.asList(r1), ChannelType.EMAIL));
+        dispatcher.sendNotification(new Notification(message, sender, Arrays.asList(r2), ChannelType.MOBILE));
+        dispatcher.sendNotification(new Notification(message, sender, Arrays.asList(r1, r2), ChannelType.PUSH));
+
+        Thread.sleep(2000);
+        dispatcher.shutdown();
+    }
+}
+
