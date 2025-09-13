@@ -11,7 +11,7 @@ package lld;
 
 // flow
 /**
- * Player --> Game ---> Board --> Cell --> STATUS
+ * Player1 --> Game ---> Board --> Cell --> STATUS
  * */
 
 // What are the entities involved
@@ -19,13 +19,13 @@ package lld;
  *
  * Step 2: Core Entities
  * Entity	Responsibility
- * Player	Represents a player with symbol (X/O).
+ * Player1	Represents a player with symbol (X/O).
  * Board	Maintains state of the grid, validates moves.
  * Game	Controls flow, checks win/draw state.
  * Move	Represents a single move (row, col, player).
  * GameStatus	Enum → IN_PROGRESS, WIN, DRAW.
  *
- * Player{
+ * Player1{
  *     id
  *     symbol X or O
  *     isHuman
@@ -43,11 +43,11 @@ package lld;
  * }
  *
  * Game{
- *     Player player1;
- *     Player player2;
+ *     Player1 player1;
+ *     Player1 player2;
  *     int boardSize;
  *     Cell[][] board;
- *     Player currentPlayer
+ *     Player1 currentPlayer
  *     GameStatus status
  *
  *     + playMove(int x,int y)
@@ -73,15 +73,15 @@ package lld;
 
 public class TicToeGame {
 
-   private Player player1;
-   private Player player2;
+   private Player1 player1;
+   private Player1 player2;
    private int boardSize;
    private Cell[][] board;
-   private Player currentPlayer;
+   private Player1 currentPlayer;
    private GameStatus status;
 
     // game is initialized
-    public TicToeGame(Player player1, Player player2, int boardSize, Player currentPlayer) {
+    public TicToeGame(Player1 player1, Player1 player2, int boardSize, Player1 currentPlayer) {
         this.player1 = player1;
         this.player2 = player2;
         this.boardSize = boardSize;
@@ -97,7 +97,7 @@ public class TicToeGame {
         boolean isWinner = checkWinner();
         if(isWinner){
             status = GameStatus.WINNER;
-            System.out.println("Player " + currentPlayer.getName() + " wins");
+            System.out.println("Player1 " + currentPlayer.getName() + " wins");
             System.exit(0);
         }
 
@@ -137,7 +137,7 @@ public class TicToeGame {
     }
 
     private void switchPlayer() {
-        if(currentPlayer.getColor().name().equalsIgnoreCase(player1.getColor().name())){
+        if(currentPlayer.getSymbol().name().equalsIgnoreCase(player1.getSymbol().name())){
             currentPlayer = player2;
         }
         else{
@@ -184,7 +184,7 @@ enum Symbol{
     int row;
     int col;
     boolean isOccupied;
-    Player player;
+    Player1 player;
 
      public int getRow() {
          return row;
@@ -210,11 +210,28 @@ enum Symbol{
          isOccupied = occupied;
      }
 
-     public Player getPlayer() {
+     public Player1 getPlayer() {
          return player;
      }
 
-     public void setPlayer(Player player) {
+     public void setPlayer(Player1 player) {
          this.player = player;
      }
  }
+
+
+
+public class TicTacToeMain {
+    public static void main(String[] args) {
+        Player1 p1 = new Player1("Alice", Symbol.X, false);
+        Player1 p2 = new Player1("Bob", Symbol.O, false);
+
+        TicToeGame game = new TicToeGame(p1, p2,3,p1);
+
+        game.playMove(0, 0);
+        game.playMove(1, 1);
+        game.playMove(0, 1);
+        game.playMove(2, 2);
+        game.playMove(0, 2); // Alice wins
+    }
+}
