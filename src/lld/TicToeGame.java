@@ -221,7 +221,7 @@ enum Symbol{
 
 
 
-public class TicTacToeMain {
+ class TicTacToeMain {
     public static void main(String[] args) {
         Player1 p1 = new Player1("Alice", Symbol.X, false);
         Player1 p2 = new Player1("Bob", Symbol.O, false);
