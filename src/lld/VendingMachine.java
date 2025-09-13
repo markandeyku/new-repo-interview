@@ -59,7 +59,7 @@ enum Coin {
 }
 
 // ----------------- Payment Processor -----------------
-class PaymentProcessor {
+class PaymentProcessor1 {
     private double balance = 0.0;
 
     public void insertCoin(Coin coin) {
@@ -203,7 +203,7 @@ class DispensingState implements State {
 // ----------------- Vending Machine -----------------
 class VendingMachine {
     private final Inventory inventory = new Inventory();
-    private final PaymentProcessor paymentProcessor = new PaymentProcessor();
+    private final PaymentProcessor1 paymentProcessor = new PaymentProcessor1();
     private State currentState;
 
     public VendingMachine() {
@@ -211,7 +211,7 @@ class VendingMachine {
     }
 
     public Inventory getInventory() { return inventory; }
-    public PaymentProcessor getPaymentProcessor() { return paymentProcessor; }
+    public PaymentProcessor1 getPaymentProcessor() { return paymentProcessor; }
 
     public void setState(State state) { this.currentState = state; }
 

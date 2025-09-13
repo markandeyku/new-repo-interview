@@ -50,14 +50,41 @@ class Truck1 extends Vehicle1 {
 class User {
     private String id;
     private String name;
+    private String emailId;
+    private String phoneNo;
 
-    public User(String id, String name) {
+    public User(String id, String name, String emailId) {
         this.id = id;
         this.name = name;
+        this.emailId = emailId;
     }
 
     public String getId() { return id; }
     public String getName() { return name; }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getEmailId() {
+        return emailId;
+    }
+
+    public void setEmailId(String emailId) {
+        this.emailId = emailId;
+    }
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
 }
 
 // ---- STRATEGY: PRICING ----
@@ -136,7 +163,7 @@ class InventoryService {
 }
 
 // ---- PAYMENT ----
-class PaymentService {
+class PaymentService1 {
     public void processPayment(User user, double amount) {
         System.out.println("Payment of ₹" + amount + " processed for user " + user.getName());
     }
@@ -146,12 +173,12 @@ class PaymentService {
 class RentalSystem {
     private static RentalSystem instance;
     private InventoryService inventory;
-    private PaymentService paymentService;
+    private PaymentService1 paymentService;
     private List<RentalBooking> bookings;
 
     private RentalSystem() {
         inventory = new InventoryService();
-        paymentService = new PaymentService();
+        paymentService = new PaymentService1();
         bookings = new ArrayList<>();
     }
 
@@ -196,7 +223,7 @@ class RentalSystem {
         system.addVehicle1(new Truck1("T1", "Tata Truck1"));
 
         // User
-        User user = new User("U1", "Mark");
+        User user = new User("U1", "Mark", "mark@gmail.com");
 
         // Booking a Car1
         RentalBooking booking = system.createBooking(user, Vehicle1Type1.Car1);
