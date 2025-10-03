@@ -1,0 +1,22 @@
+
+Heap → dynamic objects
+
+Stack → local variables & call frames
+
+Method Area/Metaspace → class-level info + static variables
+
+PC Register & Native Stack → thread execution
+
+String pool & constant pool → memory optimization
+
+
+| Memory Area                  | Stores                                         | Scope        | Lifetime         | Notes                  |
+| ---------------------------- | ---------------------------------------------- | ------------ | ---------------- | ---------------------- |
+| **Heap**                     | Objects, instance variables                    | Global       | GC managed       | Young/Old generation   |
+| **Stack**                    | Local primitives, references, method frames    | Thread-local | Method execution | LIFO, fast             |
+| **Method Area / Metaspace**  | Class metadata, static variables, constants    | Global       | Class lifetime   | Java 8+ uses Metaspace |
+| **String Pool**              | Interned strings                               | Global       | JVM lifetime     | Memory optimization    |
+| **Runtime Constant Pool**    | Literals, symbolic references, final variables | Global       | JVM lifetime     | Part of Method Area    |
+| **PC Register**              | Current instruction address                    | Thread-local | Thread lifetime  | Instruction tracking   |
+| **Native Method Stack**      | Native method execution                        | Thread-local | Thread lifetime  | JNI support            |
+| **Direct / Off-Heap Memory** | NIO buffers                                    | OS memory    | GC or manual     | Outside JVM heap       |
