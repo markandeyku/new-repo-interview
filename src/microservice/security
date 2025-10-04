@@ -1,0 +1,76 @@
+
+2️⃣ Difference between HTTPS, SSL, TLS, and mTLS
+ | Term                               | Description                                                     | Use Case                                          |
+ | ---------------------------------- | --------------------------------------------------------------- | ------------------------------------------------- |
+ | **SSL (Secure Sockets Layer)**     | Legacy protocol to encrypt communication                        | Mostly deprecated, replaced by TLS                |
+ | **TLS (Transport Layer Security)** | Modern protocol for encrypted client-server communication       | Web apps, APIs                                    |
+ | **HTTPS**                          | HTTP over TLS                                                   | Browsers, APIs                                    |
+ | **mTLS (Mutual TLS)**              | Both client & server authenticate each other using certificates | Service-to-service communication in microservices |
+
+3️⃣ What is SecurityFilterChain in Spring Security 5+?
+
+    Definition: A chain of filters that intercept HTTP requests and enforce security rules.
+    Replaces legacy WebSecurityConfigurerAdapter in Spring Security 5.7+
+    Each filter handles a specific concern: authentication, authorization, CSRF, CORS, headers, etc.
+    Example:
+    @Bean
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+        http
+            .csrf().disable()
+            .authorizeHttpRequests()
+            .requestMatchers("/admin/**").hasRole("ADMIN")
+            .anyRequest().authenticated()
+            .and()
+            .oauth2ResourceServer()
+            .jwt();
+        return http.build();
+    }
+
+    Interview Tip:
+
+    Explain how filters execute in order → first authentication, then authorization, then CSRF/CORS.
+
+4️⃣ What is CSRF and how does Spring Security prevent it?
+
+    CSRF (Cross-Site Request Forgery):
+    Attack where a malicious site tricks a user’s browser to make unwanted requests (like fund transfer)
+    to a trusted site where the user is authenticated.
+    Prevention in Spring Security:
+
+    Spring Security enables CSRF protection by default for stateful applications.
+    Mechanism:
+
+    Generates a CSRF token for the user session.
+    Token must be sent with each state-changing request (POST, PUT, DELETE).
+    Server validates token → prevents malicious requests.
+    For stateless APIs (JWT, microservices):
+    CSRF protection can be disabled since tokens are sent in headers, not cookies.  ---- imp for microservice
+
+5️⃣ What is CORS and how do you configure it securely?
+    CORS (Cross-Origin Resource Sharing):
+    Browser security feature restricting requests from different origins.
+    Why needed:
+    Microservices often serve front-end apps hosted on different domains.
+    Spring Security Configuration:
+
+    Only allow trusted origins.
+    Avoid wildcard * for credentials.
+    Limit allowed methods and headers to reduce attack surface.
+
+
+6️⃣ How do you prevent SQL Injection and XSS in Spring applications?
+
+    SQL Injection:
+    Use parameterized queries / PreparedStatement:
+    jdbcTemplate.update("INSERT INTO users(name) VALUES (?)", user.getName());
+    Avoid string concatenation for queries.
+    For JPA/Hibernate, use JPQL with parameters or Criteria API.
+
+    XSS (Cross-Site Scripting):
+    Occurs when malicious scripts are injected in user input.
+
+    Prevention techniques:
+    Encode outputs in HTML templates (th:text in Thymeleaf).
+    Validate and sanitize user inputs.
+    Use libraries like OWASP Java Encoder.
+    Bonus: Use Spring Security headers for extra protection:
