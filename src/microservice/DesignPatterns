@@ -1,0 +1,51 @@
+What is 2PC (Two-Phase Commit)?
+    It’s a protocol for distributed transactions across multiple databases/services.
+    A coordinator asks all participants to prepare (phase 1). If all succeed, it tells them to commit (phase 2).
+    If any fail, all participants rollback.
+
+    Ensures strong consistency (ACID) across distributed systems.
+
+
+
+🔄 Comparison: 2PC vs Saga Choreography vs Saga Orchestration
+
+| Aspect              | **2PC (Two-Phase Commit)**                      | **Saga – Choreography**                                    | **Saga – Orchestration**                                    |
+| ------------------- | ----------------------------------------------- | ---------------------------------------------------------- | ----------------------------------------------------------- |
+| **Consistency**     | Strong consistency (ACID across services)       | Eventual consistency                                       | Eventual consistency                                        |
+| **Coordination**    | Central coordinator ensures commit/rollback     | No central coordinator → services publish/subscribe events | Central orchestrator manages workflow and commands services |
+| **Scalability**     | Poor (locks resources, blocking protocol)       | High (fully distributed, no central bottleneck)            | Moderate (depends on orchestrator capacity)                 |
+| **Fault Tolerance** | Weak → single point of failure at coordinator   | Better, since each service reacts independently            | Good, but orchestrator is a potential SPOF                  |
+| **Complexity**      | Simple in small systems, hard in microservices  | Logic distributed → can become hard to trace/debug         | Centralized logic → easier to understand but more coupling  |
+| **Performance**     | Slow, blocking, locks held until commit         | Fast, asynchronous event-driven                            | Slower than choreography but more controlled                |
+| **Error Handling**  | Rollback handled by coordinator                 | Each service executes compensating transaction on failure  | Orchestrator triggers compensating transactions             |
+| **Use Case Fit**    | Traditional monolithic or small distributed DBs | Loosely coupled microservices, high scalability needs      | Complex workflows where central control is required         |
+
+
+⚡ What is CQRS?
+    CQRS (Command Query Responsibility Segregation) is a design pattern where we separate the write
+    operations (commands) from the read operations (queries) on a data model.
+
+
+
+🎯 Role of CQRS in Microservices
+1. Improves Performance
+    Reads and writes are optimized separately.
+    Example: Writes may go into a normalized relational DB, while queries may be served from a denormalized view (NoSQL, cache, ElasticSearch).
+
+2. Scalability
+    Read load and write load can be scaled independently.
+    In most systems, reads >> writes → so you can scale only the query side.
+
+3. Event-Driven Consistency
+    Works well with Event Sourcing → every command produces an event, which updates the read model asynchronously.
+    This means eventual consistency between write and read models.
+
+4. Clear Separation of Concerns
+    Commands enforce business rules.
+    Queries focus on data representation.
+    Leads to cleaner design in complex domains.
+
+5. Flexibility
+    Different storage technologies can be used:
+    Write model → RDBMS (ACID)
+    Read model → NoSQL (fast queries), Redis (cache), ElasticSearch (search)
