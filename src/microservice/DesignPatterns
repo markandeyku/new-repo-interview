@@ -49,3 +49,41 @@ What is 2PC (Two-Phase Commit)?
     Different storage technologies can be used:
     Write model → RDBMS (ACID)
     Read model → NoSQL (fast queries), Redis (cache), ElasticSearch (search)
+
+
+“For example, in an e-commerce system when a customer places an order, multiple services are
+involved (Order, Inventory, Payment, Shipping). In a Saga pattern, each service performs its task
+and publishes an event. If one service fails (e.g., Payment fails), compensating transactions
+undo previous steps (Inventory released, Order cancelled). This ensures eventual consistency without using 2PC.”
+
+
+
+1️⃣ Choreography Saga (Event-Driven)
+
+No central controller, services react to events.
+
+Flow:
+    `Order Service → creates order (status = "PENDING") → publishes OrderCreatedEvent.
+    Inventory Service → listens to event → reserves stock → publishes InventoryReservedEvent.
+    Payment Service → listens → charges customer → publishes PaymentProcessedEvent.
+    Shipping Service → listens → arranges shipment → publishes OrderShippedEvent.
+    Order Service → updates order status to "COMPLETED".`
+
+Failure Example:
+    If Payment fails, Payment Service publishes PaymentFailedEvent.
+    Inventory Service listens → executes compensating transaction (release stock).
+    Order Service updates order → "CANCELLED".
+
+
+2️⃣ Orchestration Saga (Central Coordinator)
+One Orchestrator Service coordinates the workflow.
+
+Flow:
+    Orchestrator sends ReserveInventoryCommand to Inventory Service.
+    On success → sends ProcessPaymentCommand to Payment Service.
+    On success → sends ArrangeShippingCommand to Shipping Service.
+    On success → updates order as "COMPLETED".
+
+Failure Example:
+    If Payment fails → Orchestrator triggers CancelInventoryReservationCommand.
+    Order marked as "CANCELLED".
