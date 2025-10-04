@@ -1,0 +1,234 @@
+1️⃣ How do you implement inter-service communication securely? (mTLS, JWT, OAuth2)
+
+    mTLS (Mutual TLS):
+    Both client and server present certificates → ensures mutual authentication.
+    Example: Service A calls Service B, both verify each other’s identities using X.509 certificates.
+    🔑 Best for internal service-to-service security inside Kubernetes or service mesh (Istio, Linkerd).
+
+    JWT (JSON Web Token):
+    Each request carries a signed token with claims (user id, roles, expiry).
+    Services validate JWT using a shared secret or public key.
+    🔑 Lightweight, stateless, commonly used for user-to-service communication.
+
+    OAuth2:
+    Delegated authorization mechanism.
+    Example: A Payment Service can access a User’s bank account on their behalf, without storing credentials.
+    🔑 Best for user identity delegation (login via Google, Facebook).
+
+    👉 Interview Tip: “For internal service-to-service communication I’d use mTLS with a service mesh,
+       and for user authentication I’d use OAuth2 + JWT.”
+
+
+2️⃣ What is idempotency and how do you design idempotent APIs?
+Definition: An operation is idempotent if calling it multiple times has the same effect as calling it once.
+Why important in microservices?
+    Network retries may cause duplicate requests. If not idempotent → double billing, double booking.
+
+Design strategies:
+
+Use idempotency keys (e.g., X-Idempotency-Key header in payment APIs).
+    For PUT requests → replace resource instead of updating multiple times.
+    For DELETE → deleting the same resource twice should not fail.
+    Store processed requests in DB/cache to reject duplicates.
+    👉 Example: Stripe’s API uses Idempotency-Key to ensure multiple retries of a payment don’t charge the customer twice.
+
+
+
+3️⃣ How does a Circuit Breaker work?
+Problem: If Service A calls Service B (which is slow/down), A may get stuck → cascading failures.
+Solution (Circuit Breaker):
+
+    Closed state: Calls flow normally.
+    Open state:   After N failures, breaker “opens” → requests fail immediately without hitting Service B.
+    Half-open state: After a cooldown, allow a few trial requests → if success → close again.
+
+Implementation: Resilience4j (Java), Envoy/Istio (infra).
+👉 Example: If Payment Service is down, Order Service will “open circuit” and fail fast → user sees “Payment unavailable” instead of long timeout.
+
+4️⃣ How do you handle partial failures in distributed systems?
+    Retries with backoff: Retry failed requests, but with exponential backoff to avoid overload.
+    Timeouts: Don’t wait indefinitely for a response.
+    Fallbacks: Provide degraded functionality (e.g., show cached data if real-time data unavailable).
+    Bulkhead pattern: Isolate resources so one failing service doesn’t consume all threads.
+    Circuit Breaker: Prevent cascading failures.
+    Compensating transactions: In workflows (Saga pattern), undo successful steps if one fails.
+
+    👉 Example: If Payment succeeds but Shipping fails → Saga compensates by refunding the payment.
+
+5️⃣ What is a Dead Letter Queue in messaging systems?
+
+    Definition: A DLQ is a special queue where failed messages are sent after retry attempts are exhausted.
+    Purpose:
+    Prevents message loss.
+    Allows debugging & reprocessing.
+    Example: In Kafka or RabbitMQ, if a message keeps failing due to malformed payload → it is moved to DLQ.
+
+    👉 Interview line: “DLQs help maintain resilience by ensuring no message is lost, while isolating bad events for analysis.”
+
+6️⃣ Difference between Authentication and Authorization
+
+    --- Authentication (Who are you?)
+    Verifying identity.
+    Example: Login with username/password, token validation.
+    --- Authorization (What are you allowed to do?)
+    Permission check.
+
+    Example: User may be authenticated but not authorized to access /admin.
+    👉 AuthN before AuthZ: First prove identity → then check access rights.
+
+
+7️⃣ How do you implement JWT-based authentication in microservices?
+ Flow:
+     User logs in → Auth Service issues JWT (signed with private key).
+     User calls Service A → includes JWT in Authorization: Bearer <token>.
+     Service A validates JWT (using public key) → extracts claims.
+     No need to contact Auth Service again (stateless).
+
+ Best Practices:
+     Use short expiry + refresh tokens.
+     Sign with asymmetric keys (RS256).
+     Store minimal claims (userId, roles).
+
+ 👉 Example: In Spring Boot, use spring-boot-starter-oauth2-resource-server to validate JWT automatically.
+
+8️⃣ How do you secure internal microservice communication?
+    mTLS (Mutual TLS): Ensure only trusted services communicate.
+    Service Mesh (Istio/Linkerd): Handles encryption, auth, retries at infra level.
+    API Gateway: Entry point to enforce authentication/authorization.
+    Network Segmentation: Run services in a private network (VPC).
+    👉 Example: In Kubernetes, Istio enforces mTLS between pods → no service can impersonate another.
+
+9️⃣ Explain OAuth2 roles: Resource Owner, Client, Resource Server, Authorization Server
+    Resource Owner: The user who owns the data.
+    Client: Application requesting access (e.g., a mobile app).
+    Resource Server: The API hosting the resource (e.g., Google Drive API).
+    Authorization Server: Issues access tokens (e.g., Google’s OAuth server).
+    👉 Example: When you log into an app using Google Login:
+    You (user) = Resource Owner
+    The app = Client
+    Google Drive API = Resource Server
+    Google Auth server = Authorization Server
+
+🔟 How do you trace a request across multiple microservices?
+    Use Distributed Tracing with correlation IDs.
+    Each request carries a traceId + spanId across services.
+    Tools:
+    Spring Cloud Sleuth (adds IDs to logs automatically).
+    Zipkin/Jaeger (visualize trace timelines).
+    👉 Example: User request → API Gateway → Order Service → Payment Service → Shipping Service → trace visible end-to-end in Jaeger.
+
+1️⃣1️⃣ Difference between Logging, Monitoring, and Tracing
+    Logging: Capturing application logs for debugging. (e.g., Logback, ELK stack)
+
+    Monitoring: Collecting system metrics (CPU, latency, errors) → alerting. (Prometheus)
+
+    Tracing: Tracking request flows across services. (Jaeger, Zipkin)
+
+    👉 “Logs = What happened, Monitoring = How healthy, Tracing = Where it went.”
+
+1️⃣2️⃣ What’s the role of Prometheus & Grafana in microservices?
+    Prometheus: Metrics collection (time-series DB). Scrapes metrics like CPU, memory, request latency.
+    Grafana: Visualization/dashboard built on top of Prometheus metrics.
+    👉 Example: Prometheus collects request latency of Order Service, Grafana shows spike at 9PM (high traffic).
+
+1️⃣3️⃣ What is eventual consistency? Give a real-world example.
+
+    Definition: System guarantees data will become consistent across services eventually, not immediately.
+    Why? Strong consistency (2PC) hurts availability in distributed systems.
+    Real-world Example:
+    In an e-commerce system, after placing an order → Order Service marks it as "PLACED".
+    Inventory & Payment update asynchronously.
+    For a short time, UI may show stale stock count.
+    Eventually, stock & payment status synchronize.
+    👉 Interview-safe analogy: “Like WhatsApp messages – sender sees a single tick (sent), then later double
+    tick (delivered). It’s eventually consistent.”
+
+
+
+🔒 Comparison Table: OAuth2.0 vs JWT vs Certificate-based vs Credential-based
+
+| Aspect          | **OAuth 2.0**                                                             | **JWT (JSON Web Token)**                                        | **Certificate-based (mTLS)**                          | **Credential-based (Username/Password)**                              |
+| --------------- | ------------------------------------------------------------------------- | --------------------------------------------------------------- | ----------------------------------------------------- | --------------------------------------------------------------------- |
+| **Purpose**     | Authorization framework for delegated access                              | Token format for stateless authentication & authorization       | Authenticate both client & server at transport layer  | Basic authentication for identity verification                        |
+| **Type**        | Authorization protocol                                                    | Token-based authentication                                      | Mutual authentication (TLS/SSL)                       | Direct authentication                                                 |
+| **Use Case**    | Third-party access without sharing passwords (login via Google, Facebook) | Carry user claims across services, verify identity              | Secure service-to-service communication               | Login to system via username/password                                 |
+| **Security**    | Requires HTTPS, tokens expire, supports scopes & refresh tokens           | Signed & optionally encrypted, prevents tampering               | Very strong (based on PKI), prevents impersonation    | Weak if passwords not hashed or rotated; vulnerable to replay attacks |
+| **State**       | Can be stateless or stateful depending on implementation                  | Stateless (self-contained token)                                | Stateless for transport layer; depends on TLS session | State may be needed to track sessions                                 |
+| **Complexity**  | High (requires authorization server, token management)                    | Medium (token signing/validation)                               | High (PKI infrastructure, certificate management)     | Low (simple to implement)                                             |
+| **Revocation**  | Supported via token revocation, refresh token expiry                      | Difficult to revoke before expiry unless stored in DB/blacklist | Managed via certificate revocation list (CRL)         | Password change or account disable                                    |
+| **Scalability** | High (supports distributed systems, microservices)                        | High (stateless, can scale horizontally)                        | Moderate (depends on certificate infrastructure)      | Limited (server needs to validate credentials each time)              |
+| **Performance** | Slight overhead due to token issuance & validation                        | Very fast (local validation of token signature)                 | Medium (TLS handshake adds latency)                   | Fast but repeated password validation may hit DB                      |
+
+
+
+Security related annotations and methods to secure the rest apis:
+
+| Annotation                  | Purpose                          | Example Use Case                        |
+| --------------------------- | -------------------------------- | --------------------------------------- |
+| @EnableWebSecurity          | Enable web security              | Config class                            |
+
+@Configuration
+@EnableWebSecurity
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    // configure authentication & authorization
+}
+
+
+| @EnableGlobalMethodSecurity | Enable method-level security     | pre/post authorization                  |
+
+@Configuration
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class MethodSecurityConfig {
+}
+
+
+| @Secured                    | Role-based method access         | Admin-only methods                      |
+
+@Secured("ROLE_ADMIN")
+public void deleteUser(Long userId) {
+    // only users with ROLE_ADMIN can access
+}
+
+| @RolesAllowed               | JSR-250 version of @Secured      | Standard role check                     |
+
+@RolesAllowed({"ROLE_ADMIN"})
+public void createUser(User user) {
+}
+
+| @PreAuthorize               | Pre-invocation access control    | SpEL-based dynamic checks               |
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void updateUser(User user) { }
+
+    @PreAuthorize("#user.id == authentication.principal.id")
+    public void updateOwnProfile(User user) { }
+
+
+| @PostAuthorize              | Post-invocation access control   | Check ownership of returned object      |
+
+    @PostAuthorize("returnObject.owner == authentication.name")
+    public User getUser(Long userId) {
+        return userRepository.findById(userId);
+    }
+
+
+| @AuthenticationPrincipal    | Inject authenticated user        | Controller methods                      |
+
+    @GetMapping("/profile")
+    public UserProfile getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        return userService.getProfile(userDetails.getUsername());
+    }
+
+
+| @PreFilter                  | Filter collections before method | Filter input list based on roles        |
+
+@PreFilter("filterObject.owner == authentication.name")
+public void processOrders(List<Order> orders) { }
+
+| @PostFilter                 | Filter collections after method  | Filter returned list based on ownership |
+
+@PostFilter("filterObject.owner == authentication.name")
+public List<Order> getOrders() {
+    return orderRepository.findAll();
+}
+
