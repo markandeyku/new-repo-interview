@@ -74,3 +74,57 @@
     Validate and sanitize user inputs.
     Use libraries like OWASP Java Encoder.
     Bonus: Use Spring Security headers for extra protection:
+
+
+
+
+🔹 HTTP (HyperText Transfer Protocol)
+
+Protocol: Used for communication between web browsers and servers.
+
+Port: Default is 80.
+
+Security: 🚫 Not secure — data is sent in plain text, so attackers can eavesdrop.
+
+Encryption: None.
+
+Use cases: Non-sensitive sites (old blogs, simple APIs, test servers).
+
+Speed: Slightly faster than HTTPS (no encryption overhead).
+
+🔹 HTTPS (HyperText Transfer Protocol Secure)
+
+Protocol: Secure version of HTTP with encryption via SSL/TLS.
+
+Port: Default is 443.
+
+Security: ✅ Secure — protects data with:
+
+Encryption (prevents eavesdropping)
+
+Authentication (verifies server identity via SSL certificate)
+
+Integrity (detects data tampering).
+
+Encryption: Uses SSL/TLS certificates.
+
+Use cases: Banking, payments, login forms, e-commerce, APIs — basically everything today.
+
+Speed: Slight overhead due to encryption, but modern TLS is optimized (often negligible).
+
+SEO: Google ranks HTTPS sites higher.
+
+🔑 Key Differences Table:
+Feature	HTTP	HTTPS
+Full Form	HyperText Transfer Protocol	HyperText Transfer Protocol Secure
+Port	80	443
+Security	Not secure (plain text)	Secure (SSL/TLS encryption)
+Encryption	❌ None	✅ Yes
+Data Integrity	❌ Not ensured	✅ Ensured
+Authentication	❌ Not verified	✅ Verified (via certificate)
+Performance	Slightly faster	Slightly slower (but negligible with modern TLS)
+SEO Ranking	Lower	Higher
+Browser Label	“Not Secure” warning	🔒 Lock icon
+
+✅ In practice:
+Today, almost all production websites must use HTTPS. Modern browsers (Chrome, Firefox, Safari) even warn users if a site is on plain HTTP.

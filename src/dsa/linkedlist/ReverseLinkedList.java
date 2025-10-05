@@ -19,7 +19,7 @@ public class ReverseLinkedList {
         Node newHead = reverse(head.next); //every time this node will be the last node
         head.next.next = head;
         head.next = null;
-         System.out.println(newHead.val);
+        System.out.println(newHead.val);
         return newHead;
     }
 
@@ -28,9 +28,7 @@ public class ReverseLinkedList {
         node.next = new Node(2);
         node.next.next = new Node(3);
         node.next.next.next = new Node(4);
-        Node head = node;
-
-        Node reverseHead =  reverse(head);
+        Node reverseHead =  reverse(node);
         while(reverseHead != null){
             System.out.println(reverseHead.val);
             reverseHead = reverseHead.next;
